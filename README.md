@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arte Urbano - Gestión de Incentivos</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f7fa;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .form-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        .incentivos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .incentivo-item {
+            background: #e8f4fc;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #3498db;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .total-incentivos {
+            background: #2ecc71;
+            color: white;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .print-btn {
+            background-color: #27ae60;
+            margin-left: 10px;
+        }
+        .print-btn:hover {
+            background-color: #219653;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Arte Urbano Impresión Textil</h1>
+        <h2>Gestión de Incentivos para Empleados</h2>
+        
+        <div class="form-section">
+            <h3>Registrar Empleado</h3>
+            <div>
+                <label>Nombre Completo:</label>
+                <input type="text" id="nombre-empleado" placeholder="Ej: Juan Pérez">
+                
+                <label>Cédula:</label>
+                <input type="text" id="cedula" placeholder="Ej: 402-1234567-8">
+                
+                <label>Puesto:</label>
+                <input type="text" id="puesto" placeholder="Ej: Operador de Impresión">
+                
+                <label>Salario Base (RD$):</label>
+                <input type="number" id="salario" min="0" step="0.01" placeholder="Ej: 25000.00">
+                
+                <button onclick="agregarEmpleado()">Guardar Empleado</button>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h3>Asignar Incentivos</h3>
+            <label>Seleccionar Empleado:</label>
+            <select id="empleado-select">
+                <option value="">-- Seleccione un empleado --</option>
+            </select>
+            
+            <div class="incentivos-grid">
+                <div class="incentivo-item">
+                    <label>Cooperación (RD$):</label>
+                    <input type="number" id="cooperacion" min="0" step="0.01" value="0">
+                </div>
+                
+                <div class="incentivo-item">
+                    <label>Asistencia Perfecta (RD$):</label>
+                    <input type="number" id="asistencia" min="0" step="0.01" value="0">
+                </div>
+                
+                <div class="incentivo-item">
+                    <label>Disciplina (RD$):</label>
+                    <input type="number" id="disciplina" min="0" step="0.01" value="0">
+                </div>
+                
+                <div class="incentivo-item">
+                    <label>Producción (RD$):</label>
+                    <input type="number" id="produccion" min="0" step="0.01" value="0">
+                </div>
+                
+                <div class="incentivo-item">
+                    <label>No uso del celular (RD$):</label>
+                    <input type="number" id="no-celular" min="0" step="0.01" value="0">
+                </div>
+            </div>
+            
+            <div class="total-incentivos">
+                Total Incentivos: RD$ <span id="total-incentivos">0.00</span>
+            </div>
+            
+            <button onclick="guardarIncentivos()">Guardar Incentivos</button>
+            <button class="print-btn" onclick="generarReporte()">Generar Reporte PDF</button>
+        </div>
+        
+        <div class="form-section">
+            <h3>Historial de Incentivos</h3>
+            <table id="tabla-incentivos">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Puesto</th>
+                        <th>Cooperación</th>
+                        <th>Asistencia</th>
+                        <th>Disciplina</th>
+                        <th>Producción</th>
+                        <th>No Celular</th>
+                        <th>Total</th>
+                        <th>Fecha</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Los datos se llenarán dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos local usando localStorage
+        let empleados = JSON.parse(localStorage.getItem('empleados')) || [];
+        let incentivos = JSON.parse(localStorage.getItem('incentivos')) || [];
+        
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            actualizarSelectEmpleados();
+            actualizarTablaIncentivos();
+            calcularTotalIncentivos();
+            
+            // Escuchar cambios en los inputs de incentivos
+            const inputs = document.querySelectorAll('.incentivos-grid input');
+            inputs.forEach(input => {
+                input.addEventListener('input', calcularTotalIncentivos);
+            });
+        });
+        
+        // Función para agregar nuevo empleado
+        function agregarEmpleado() {
+            const nombre = document.getElementById('nombre-empleado').value;
+            const cedula = document.getElementById('cedula').value;
+            const puesto = document.getElementById('puesto').value;
+            const salario = parseFloat(document.getElementById('salario').value);
+            
+            if (!nombre || !cedula || !puesto || isNaN(salario)) {
+                alert('Por favor complete todos los campos correctamente');
+                return;
+            }
+            
+            const nuevoEmpleado = {
+                id: Date.now(),
+                nombre,
+                cedula,
+                puesto,
+                salario,
+                fechaRegistro: new Date().toLocaleDateString()
+            };
+            
+            empleados.push(nuevoEmpleado);
+            localStorage.setItem('empleados', JSON.stringify(empleados));
+            
+            // Limpiar formulario
+            document.getElementById('nombre-empleado').value = '';
+            document.getElementById('cedula').value = '';
+            document.getElementById('puesto').value = '';
+            document.getElementById('salario').value = '';
+            
+            actualizarSelectEmpleados();
+            alert('Empleado registrado con éxito');
+        }
+        
+        // Actualizar el select de empleados
+        function actualizarSelectEmpleados() {
+            const select = document.getElementById('empleado-select');
+            select.innerHTML = '<option value="">-- Seleccione un empleado --</option>';
+            
+            empleados.forEach(empleado => {
+                const option = document.createElement('option');
+                option.value = empleado.id;
+                option.textContent = `${empleado.nombre} - ${empleado.puesto}`;
+                select.appendChild(option);
+            });
+        }
+        
+        // Calcular el total de incentivos
+        function calcularTotalIncentivos() {
+            const cooperacion = parseFloat(document.getElementById('cooperacion').value) || 0;
+            const asistencia = parseFloat(document.getElementById('asistencia').value) || 0;
+            const disciplina = parseFloat(document.getElementById('disciplina').value) || 0;
+            const produccion = parseFloat(document.getElementById('produccion').value) || 0;
+            const noCelular = parseFloat(document.getElementById('no-celular').value) || 0;
+            
+            const total = cooperacion + asistencia + disciplina + produccion + noCelular;
+            document.getElementById('total-incentivos').textContent = total.toFixed(2);
+        }
+        
+        // Guardar los incentivos
+        function guardarIncentivos() {
+            const empleadoId = parseInt(document.getElementById('empleado-select').value);
+            if (!empleadoId) {
+                alert('Por favor seleccione un empleado');
+                return;
+            }
+            
+            const empleado = empleados.find(e => e.id === empleadoId);
+            if (!empleado) {
+                alert('Empleado no encontrado');
+                return;
+            }
+            
+            const cooperacion = parseFloat(document.getElementById('cooperacion').value) || 0;
+            const asistencia = parseFloat(document.getElementById('asistencia').value) || 0;
+            const disciplina = parseFloat(document.getElementById('disciplina').value) || 0;
+            const produccion = parseFloat(document.getElementById('produccion').value) || 0;
+            const noCelular = parseFloat(document.getElementById('no-celular').value) || 0;
+            const total = cooperacion + asistencia + disciplina + produccion + noCelular;
+            
+            const nuevoIncentivo = {
+                id: Date.now(),
+                empleadoId,
+                fecha: new Date().toLocaleDateString(),
+                cooperacion,
+                asistencia,
+                disciplina,
+                produccion,
+                noCelular,
+                total
+            };
+            
+            incentivos.push(nuevoIncentivo);
+            localStorage.setItem('incentivos', JSON.stringify(incentivos));
+            
+            // Limpiar formulario
+            document.getElementById('cooperacion').value = '0';
+            document.getElementById('asistencia').value = '0';
+            document.getElementById('disciplina').value = '0';
+            document.getElementById('produccion').value = '0';
+            document.getElementById('no-celular').value = '0';
+            document.getElementById('total-incentivos').textContent = '0.00';
+            
+            actualizarTablaIncentivos();
+            alert('Incentivos registrados con éxito');
+        }
+        
+        // Actualizar la tabla de incentivos
+        function actualizarTablaIncentivos() {
+            const tbody = document.querySelector('#tabla-incentivos tbody');
+            tbody.innerHTML = '';
+            
+            incentivos.forEach(incentivo => {
+                const empleado = empleados.find(e => e.id === incentivo.empleadoId);
+                if (!empleado) return;
+                
+                const row = document.createElement('tr');
+                
+                row.innerHTML = `
+                    <td>${empleado.nombre}</td>
+                    <td>${empleado.puesto}</td>
+                    <td>RD$ ${incentivo.cooperacion.toFixed(2)}</td>
+                    <td>RD$ ${incentivo.asistencia.toFixed(2)}</td>
+                    <td>RD$ ${incentivo.disciplina.toFixed(2)}</td>
+                    <td>RD$ ${incentivo.produccion.toFixed(2)}</td>
+                    <td>RD$ ${incentivo.noCelular.toFixed(2)}</td>
+                    <td>RD$ ${incentivo.total.toFixed(2)}</td>
+                    <td>${incentivo.fecha}</td>
+                `;
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Generar reporte PDF (simplificado para este ejemplo)
+        function generarReporte() {
+            const empleadoId = parseInt(document.getElementById('empleado-select').value);
+            if (!empleadoId) {
+                alert('Por favor seleccione un empleado para generar el reporte');
+                return;
+            }
+            
+            const empleado = empleados.find(e => e.id === empleadoId);
+            const incentivosEmpleado = incentivos.filter(i => i.empleadoId === empleadoId);
+            
+            if (incentivosEmpleado.length === 0) {
+                alert('No hay incentivos registrados para este empleado');
+                return;
+            }
+            
+            // Crear contenido del PDF
+            let contenido = `
+                <h1 style="text-align: center;">Arte Urbano Impresión Textil</h1>
+                <h2 style="text-align: center;">Reporte de Incentivos</h2>
+                <hr>
+                <p><strong>Empleado:</strong> ${empleado.nombre}</p>
+                <p><strong>Cédula:</strong> ${empleado.cedula}</p>
+                <p><strong>Puesto:</strong> ${empleado.puesto}</p>
+                <p><strong>Salario Base:</strong> RD$ ${empleado.salario.toFixed(2)}</p>
+                <hr>
+                <h3>Historial de Incentivos</h3>
+                <table border="1" cellpadding="5" cellspacing="0" width="100%">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Cooperación</th>
+                            <th>Asistencia</th>
+                            <th>Disciplina</th>
+                            <th>Producción</th>
+                            <th>No Celular</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            incentivosEmpleado.forEach(incentivo => {
+                contenido += `
+                    <tr>
+                        <td>${incentivo.fecha}</td>
+                        <td>RD$ ${incentivo.cooperacion.toFixed(2)}</td>
+                        <td>RD$ ${incentivo.asistencia.toFixed(2)}</td>
+                        <td>RD$ ${incentivo.disciplina.toFixed(2)}</td>
+                        <td>RD$ ${incentivo.produccion.toFixed(2)}</td>
+                        <td>RD$ ${incentivo.noCelular.toFixed(2)}</td>
+                        <td>RD$ ${incentivo.total.toFixed(2)}</td>
+                    </tr>
+                `;
+            });
+            
+            contenido += `
+                    </tbody>
+                </table>
+                <hr>
+                <p style="text-align: right;"><strong>Total Acumulado:</strong> RD$ ${incentivosEmpleado.reduce((sum, i) => sum + i.total, 0).toFixed(2)}</p>
+                <p style="text-align: center; font-size: 12px; margin-top: 30px;">Generado el ${new Date().toLocaleDateString()}</p>
+            `;
+            
+            // Abrir ventana para imprimir
+            const ventana = window.open('', '_blank');
+            ventana.document.write(`
+                <html>
+                    <head>
+                        <title>Reporte de Incentivos - ${empleado.nombre}</title>
+                        <style>
+                            body { font-family: Arial, sans-serif; margin: 20px; }
+                            table { width: 100%; border-collapse: collapse; }
+                            th { background-color: #f2f2f2; }
+                            td, th { border: 1px solid #ddd; padding: 8px; text-align: left; }
+                            hr { margin: 20px 0; border: 0; border-top: 1px solid #eee; }
+                        </style>
+                    </head>
+                    <body>
+                        ${contenido}
+                        <script>
+                            window.onload = function() {
+                                setTimeout(function() {
+                                    window.print();
+                                }, 500);
+                            };
+                        </script>
+                    </body>
+                </html>
+            `);
+            ventana.document.close();
+        }
+    </script>
+</body>
+</html>
